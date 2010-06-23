@@ -23,6 +23,22 @@ public class Configuration {
 		return Utils.combinePaths(Utils.getUserHomeDir(), ".iproxy");
 	}
 
+	public boolean getBoolean(String key) {
+		return Boolean.parseBoolean(config.getProperty(key));
+	}
+
+	public int getInteger(String key) {
+		return Integer.parseInt(config.getProperty(key));
+	}
+
+	public double getDouble(String key) {
+		return Double.parseDouble(config.getProperty(key));
+	}
+
+	public String getString(String key) {
+		return config.getProperty(key);
+	}
+
 	@PostConstruct
 	public void init() {
 		File file = new File(getConfigDir());
@@ -33,6 +49,15 @@ public class Configuration {
 				logger.error("Impossible!!!", e);
 			} catch (IOException e) {
 				logger.error("Got an IOException!", e);
+			}
+		} else {
+			try {
+				logger
+						.info("Can't find the configuration file in user's home, reading the default configurations.");
+				config.load(Thread.currentThread().getContextClassLoader()
+						.getResourceAsStream("config.default.properties"));
+			} catch (IOException e) {
+				logger.error("Error in reading default configration file.", e);
 			}
 		}
 	}

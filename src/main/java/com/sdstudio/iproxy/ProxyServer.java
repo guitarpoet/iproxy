@@ -27,6 +27,16 @@ public class ProxyServer extends ModelBase {
 	private UserInfo userInfo;
 	private Session session;
 	private boolean running;
+	private Configuration configuration;
+
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+
+	@Autowired
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
+	}
 
 	public UserInfo getUserInfo() {
 		return userInfo;
@@ -55,7 +65,15 @@ public class ProxyServer extends ModelBase {
 	}
 
 	protected void addPortForwards() throws JSchException {
-		getSession().setPortForwardingL(2010, "58.211.114.109", 80);
+		if (getConfiguration().getBoolean("http.proxy.enabled")) {
+			int httpProxyPort = getConfiguration()
+					.getInteger("http.proxy.port");
+			int httpPort = getConfiguration().getInteger("http.port");
+			logger.info("Forward http at port {} -> host {} port {}.",
+					new Object[] { httpProxyPort, "58.211.114.109", httpPort });
+			getSession().setPortForwardingL(httpProxyPort, "58.211.114.109",
+					httpPort);
+		}
 	}
 
 	protected void setRunning(boolean running) {
