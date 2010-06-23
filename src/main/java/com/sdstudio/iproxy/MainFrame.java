@@ -53,6 +53,7 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		startStopButton = new JButton(getStartStopButtonAction());
 		getContentPane().add(startStopButton);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocationByPlatform(true);
 	}
 
 	@Override

@@ -58,21 +58,31 @@ public class ProxyServer extends ModelBase {
 
 	protected Session getSession() throws JSchException {
 		if (session == null) {
-			session = jsch.getSession("root", "58.211.114.109");
+			String user = getConfiguration().getString("ssh.user");
+			String host = getConfiguration().getString("ssh.host");
+			session = jsch.getSession(user, host);
 			session.setUserInfo(getUserInfo());
 		}
 		return session;
 	}
 
 	protected void addPortForwards() throws JSchException {
+		String host = getConfiguration().getString("ssh.host");
 		if (getConfiguration().getBoolean("http.proxy.enabled")) {
 			int httpProxyPort = getConfiguration()
 					.getInteger("http.proxy.port");
 			int httpPort = getConfiguration().getInteger("http.port");
 			logger.info("Forward http at port {} -> host {} port {}.",
-					new Object[] { httpProxyPort, "58.211.114.109", httpPort });
-			getSession().setPortForwardingL(httpProxyPort, "58.211.114.109",
-					httpPort);
+					new Object[] { httpProxyPort, host, httpPort });
+			getSession().setPortForwardingL(httpProxyPort, host, httpPort);
+		}
+		if (getConfiguration().getBoolean("https.proxy.enabled")) {
+			int httpsProxyPort = getConfiguration().getInteger(
+					"https.proxy.port");
+			int httpsPort = getConfiguration().getInteger("https.port");
+			logger.info("Forward https at port {} -> host {} port {}.",
+					new Object[] { httpsProxyPort, host, httpsPort });
+			getSession().setPortForwardingL(httpsProxyPort, host, httpsPort);
 		}
 	}
 
