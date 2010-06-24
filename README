@@ -1,0 +1,5 @@
+iProxy is an local proxy server using ssh to transfer your request through ssh tunnel, send by the remote server and get the response back.
+
+It can be used as a http, https and ftp proxy to by pass your firewall and, gfw.
+
+Developer: Jack <guitarpoet@gmail.com>
