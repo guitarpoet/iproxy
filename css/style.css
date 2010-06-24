@@ -1,0 +1,48 @@
+body {
+  margin-top: 1em;
+  background-color: #222222;
+  font-family: "Helvetica,Arial,FreeSans";
+  color: #ededed;
+}
+body #container {
+  margin: 0 auto;
+  width: 700px;
+}
+body h1 {
+  font-size: 3.8em;
+  color: #textcolor;
+  margin-bottom: 3px;
+}
+body h1 .small { font-size: 0.4em; }
+body h1 a { text-decoration: none; }
+body h2 {
+  font-size: 1.5em;
+  color: #ededed;
+}
+body h3 {
+  text-align: center;
+  color: #ededed;
+}
+body a { color: #4183c4; }
+body .description {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+  margin-top: 30px;
+  font-style: italic;
+}
+body .download { float: right; }
+body pre {
+  background: #000000;
+  color: #ffffff;
+  padding: 15px;
+}
+body hr {
+  border: 0;
+  width: 80%;
+  border-bottom: 1px solid #aaaaaa;
+}
+body .footer {
+  text-align: center;
+  padding-top: 30px;
+  font-style: italic;
+}
