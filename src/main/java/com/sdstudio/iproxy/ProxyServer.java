@@ -1,7 +1,14 @@
 package com.sdstudio.iproxy;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +35,18 @@ public class ProxyServer extends ModelBase {
 	private Session session;
 	private boolean running;
 	private Configuration configuration;
+	private ServerBootstrap serverBootstrap;
+	private ProxyChannelPipelineFactory proxyChannelPipelineFactory;
+
+	public ProxyChannelPipelineFactory getProxyChannelPipelineFactory() {
+		return proxyChannelPipelineFactory;
+	}
+
+	@Autowired
+	public void setProxyChannelPipelineFactory(
+			ProxyChannelPipelineFactory proxyChannelPipelineFactory) {
+		this.proxyChannelPipelineFactory = proxyChannelPipelineFactory;
+	}
 
 	public Configuration getConfiguration() {
 		return configuration;
@@ -54,6 +73,23 @@ public class ProxyServer extends ModelBase {
 	@Autowired
 	public void setJsch(JSch jsch) {
 		this.jsch = jsch;
+	}
+
+	protected ChannelFactory getChannelFactory() {
+		return new NioServerSocketChannelFactory(
+				Executors.newCachedThreadPool(),
+				Executors.newCachedThreadPool());
+	}
+
+	protected ServerBootstrap getServerBootstrap() {
+		if (serverBootstrap == null) {
+			serverBootstrap = new ServerBootstrap(getChannelFactory());
+			serverBootstrap
+					.setPipelineFactory(getProxyChannelPipelineFactory());
+			serverBootstrap.setOption("child.tcpNoDelay", true);
+			serverBootstrap.setOption("child.keepAlive", true);
+		}
+		return serverBootstrap;
 	}
 
 	protected Session getSession() throws JSchException {
@@ -101,24 +137,37 @@ public class ProxyServer extends ModelBase {
 		return running;
 	}
 
+	@PostConstruct
+	public void init() {
+		logger.info("Initializing the proxy server...");
+	}
+
 	public void start() {
 		try {
 			logger.info("Starting proxy server...");
-			getSession().connect();
-			addPortForwards();
+			// getSession().connect();
+			// getProxyChannelPipelineFactory().init(getSession());
 			setRunning(true);
-		} catch (JSchException e) {
+			getServerBootstrap().bind(
+					new InetSocketAddress(getConfiguration().getInteger(
+							"listen.port")));
+		} catch (Exception e) {
 			logger.error("Server start failed!", e);
-			setRunning(false);
+			releaseResources();
 		}
 	}
 
 	@PreDestroy
 	public void stop() {
 		if (session != null) {
-			session.disconnect();
-			setRunning(false);
-			session = null;
+			releaseResources();
 		}
+	}
+
+	private void releaseResources() {
+		session.disconnect();
+		getServerBootstrap().releaseExternalResources();
+		setRunning(false);
+		session = null;
 	}
 }

@@ -13,8 +13,13 @@ public class Main {
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"application-context.xml");
-		MainFrame frame = (MainFrame) applicationContext.getBean("MainFrame");
-		frame.pack();
-		frame.setVisible(true);
+		if (args.length > 0 && args[0].equals("-nogui")) {
+			applicationContext.getBean(ProxyServer.class).start();
+		} else {
+			MainFrame frame = (MainFrame) applicationContext
+					.getBean("MainFrame");
+			frame.pack();
+			frame.setVisible(true);
+		}
 	}
 }
