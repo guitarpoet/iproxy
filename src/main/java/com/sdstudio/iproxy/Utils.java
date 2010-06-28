@@ -1,5 +1,9 @@
 package com.sdstudio.iproxy;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -20,5 +24,13 @@ public class Utils {
 
 	public static String combinePaths(String... paths) {
 		return StringUtils.join(paths, getFileSeperato());
+	}
+
+	public static void copy(InputStream in, OutputStream out)
+			throws IOException {
+		byte[] buffer = new byte[1024];
+		while (in.read(buffer) != 1) {
+			out.write(buffer);
+		}
 	}
 }

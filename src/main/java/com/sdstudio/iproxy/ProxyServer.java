@@ -145,8 +145,8 @@ public class ProxyServer extends ModelBase {
 	public void start() {
 		try {
 			logger.info("Starting proxy server...");
-			// getSession().connect();
-			// getProxyChannelPipelineFactory().init(getSession());
+			getSession().connect();
+			getProxyChannelPipelineFactory().init(getSession());
 			setRunning(true);
 			getServerBootstrap().bind(
 					new InetSocketAddress(getConfiguration().getInteger(

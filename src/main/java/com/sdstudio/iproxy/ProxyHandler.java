@@ -1,10 +1,15 @@
 package com.sdstudio.iproxy;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 
+import org.jboss.netty.buffer.BigEndianHeapChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
+import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -14,11 +19,10 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
+import com.jcraft.jsch.ChannelDirectTCPIP;
 import com.jcraft.jsch.Session;
 
-@Component("ProxyHandler")
 @ChannelPipelineCoverage("all")
 public class ProxyHandler extends SimpleChannelHandler {
 	private static Logger logger = LoggerFactory.getLogger(ProxyHandler.class);
@@ -35,25 +39,61 @@ public class ProxyHandler extends SimpleChannelHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
+		if (getSession() == null) {
+			logger.error("No session attached!");
+			return;
+		}
 		logger.debug("Message received :- {}", e);
 		ChannelBuffer buffer = (ChannelBuffer) e.getMessage();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				new ChannelBufferInputStream(buffer.copy())));
 		String s = "";
+		String host = "";
+		int port = 0;
 		while ((s = reader.readLine()) != null) {
+			if (s.trim().startsWith("Host")) {
+				String[] data = s.split(":");
+				host = data[1].trim();
+				if (data.length == 2)
+					port = 80;
+				else
+					port = Integer.parseInt(data[2].trim());
+			}
 			System.out.println(s);
 		}
-		e.getChannel().write(buffer).addListener(new ChannelFutureListener() {
-			public void operationComplete(ChannelFuture future)
-					throws Exception {
-				future.getChannel().close();
-			}
-		});
+		// Rewind the buffer.
+		buffer.discardReadBytes();
+		ChannelBuffer outbuffer = new BigEndianHeapChannelBuffer(1024);
+		ChannelDirectTCPIP tcpip = (ChannelDirectTCPIP) getSession()
+				.openChannel("direct-tcpip");
+		tcpip.setHost(host);
+		tcpip.setPort(port);
+		InetSocketAddress address = (InetSocketAddress) e.getChannel()
+				.getLocalAddress();
+		tcpip.setInputStream(new ChannelBufferInputStream(buffer));
+		tcpip.setOutputStream(new ChannelBufferOutputStream(outbuffer));
+		tcpip.setOrgIPAddress(address.getAddress().getHostAddress());
+		tcpip.setOrgPort(address.getPort());
+		logger.info("Connecting {} to {}:{}",
+				new Object[] { address.getAddress(), host, port });
+		tcpip.connect();
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				new ChannelBufferOutputStream(outbuffer)));
+		writer.write("Hello");
+		writer.flush();
+		e.getChannel().write(outbuffer)
+				.addListener(new ChannelFutureListener() {
+					public void operationComplete(ChannelFuture future)
+							throws Exception {
+						future.getChannel().close();
+					}
+				});
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
+		e.getCause().printStackTrace();
 		logger.error("Caught an exception when proxying.", e);
 		e.getChannel().close();
 	}
