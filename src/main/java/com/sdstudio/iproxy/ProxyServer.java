@@ -1,12 +1,14 @@
 package com.sdstudio.iproxy;
 
-import java.net.InetSocketAddress;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.jcraft.jsch.ChannelDirectTCPIP;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -28,25 +31,14 @@ import com.sdstudio.iproxy.core.ModelBase;
  * @version 1.0
  */
 @Component("ProxyServer")
-public class ProxyServer extends ModelBase {
+public class ProxyServer extends ModelBase implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(ProxyServer.class);
 	private JSch jsch;
 	private UserInfo userInfo;
 	private Session session;
 	private boolean running;
 	private Configuration configuration;
-	private ServerBootstrap serverBootstrap;
-	private ProxyChannelPipelineFactory proxyChannelPipelineFactory;
-
-	public ProxyChannelPipelineFactory getProxyChannelPipelineFactory() {
-		return proxyChannelPipelineFactory;
-	}
-
-	@Autowired
-	public void setProxyChannelPipelineFactory(
-			ProxyChannelPipelineFactory proxyChannelPipelineFactory) {
-		this.proxyChannelPipelineFactory = proxyChannelPipelineFactory;
-	}
+	private ServerSocket serverSocket;
 
 	public Configuration getConfiguration() {
 		return configuration;
@@ -81,17 +73,6 @@ public class ProxyServer extends ModelBase {
 				Executors.newCachedThreadPool());
 	}
 
-	protected ServerBootstrap getServerBootstrap() {
-		if (serverBootstrap == null) {
-			serverBootstrap = new ServerBootstrap(getChannelFactory());
-			serverBootstrap
-					.setPipelineFactory(getProxyChannelPipelineFactory());
-			serverBootstrap.setOption("child.tcpNoDelay", true);
-			serverBootstrap.setOption("child.keepAlive", true);
-		}
-		return serverBootstrap;
-	}
-
 	protected Session getSession() throws JSchException {
 		if (session == null) {
 			String user = getConfiguration().getString("ssh.user");
@@ -122,7 +103,7 @@ public class ProxyServer extends ModelBase {
 		}
 	}
 
-	protected void setRunning(boolean running) {
+	protected synchronized void setRunning(boolean running) {
 		if (this.running == running)
 			return;
 		this.running = running;
@@ -133,7 +114,7 @@ public class ProxyServer extends ModelBase {
 			logger.info("Proxy server stoped!");
 	}
 
-	public boolean isRunning() {
+	public synchronized boolean isRunning() {
 		return running;
 	}
 
@@ -143,31 +124,57 @@ public class ProxyServer extends ModelBase {
 	}
 
 	public void start() {
-		try {
-			logger.info("Starting proxy server...");
-			getSession().connect();
-			getProxyChannelPipelineFactory().init(getSession());
-			setRunning(true);
-			getServerBootstrap().bind(
-					new InetSocketAddress(getConfiguration().getInteger(
-							"listen.port")));
-		} catch (Exception e) {
-			logger.error("Server start failed!", e);
-			releaseResources();
-		}
+		if (isRunning())
+			return;
+		new Thread(this).start();
 	}
 
 	@PreDestroy
 	public void stop() {
-		if (session != null) {
-			releaseResources();
-		}
+		releaseResources();
 	}
 
 	private void releaseResources() {
-		session.disconnect();
-		getServerBootstrap().releaseExternalResources();
+		if (session != null)
+			session.disconnect();
 		setRunning(false);
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			logger.error("Error in closing socket.", e);
+		}
 		session = null;
+	}
+
+	public void run() {
+		try {
+			logger.info("Starting proxy server...");
+			getSession().connect();
+			int port = getConfiguration().getInteger("listen.port");
+			serverSocket = new ServerSocket(port, 0,
+					InetAddress.getByName("127.0.0.1"));
+			setRunning(true);
+			while (running) {
+				logger.info("Listening port {} for request.", port);
+				Socket socket = serverSocket.accept();
+				socket.setTcpNoDelay(true);
+				ProxyInputStream proxy = new ProxyInputStream(socket);
+				logger.info("Setting up the channel for host: {} and port {}.",
+						proxy.getHost(), proxy.getPort());
+				ChannelDirectTCPIP channel = (ChannelDirectTCPIP) getSession()
+						.openChannel("direct-tcpip");
+				channel.setHost(proxy.getHost());
+				channel.setPort(proxy.getPort());
+				channel.setOrgIPAddress(socket.getInetAddress()
+						.getHostAddress());
+				channel.setOrgPort(port);
+				channel.setOutputStream(socket.getOutputStream());
+				channel.setInputStream(proxy);
+				channel.connect();
+			}
+		} catch (Exception e) {
+			logger.error("Server start failed!", e);
+			releaseResources();
+		}
 	}
 }
