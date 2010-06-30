@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.InetSocketAddress;
 
 import org.jboss.netty.buffer.BigEndianHeapChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -20,7 +19,6 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jcraft.jsch.ChannelDirectTCPIP;
 import com.jcraft.jsch.Session;
 
 @ChannelPipelineCoverage("all")
@@ -62,21 +60,7 @@ public class ProxyHandler extends SimpleChannelHandler {
 			System.out.println(s);
 		}
 		// Rewind the buffer.
-		buffer.discardReadBytes();
 		ChannelBuffer outbuffer = new BigEndianHeapChannelBuffer(1024);
-		ChannelDirectTCPIP tcpip = (ChannelDirectTCPIP) getSession()
-				.openChannel("direct-tcpip");
-		tcpip.setHost(host);
-		tcpip.setPort(port);
-		InetSocketAddress address = (InetSocketAddress) e.getChannel()
-				.getLocalAddress();
-		tcpip.setInputStream(new ChannelBufferInputStream(buffer));
-		tcpip.setOutputStream(new ChannelBufferOutputStream(outbuffer));
-		tcpip.setOrgIPAddress(address.getAddress().getHostAddress());
-		tcpip.setOrgPort(address.getPort());
-		logger.info("Connecting {} to {}:{}",
-				new Object[] { address.getAddress(), host, port });
-		tcpip.connect();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 				new ChannelBufferOutputStream(outbuffer)));
 		writer.write("Hello");

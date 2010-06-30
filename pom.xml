@@ -140,6 +140,11 @@
 			<version>0.1.42</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.ethz.ganymed</groupId>
+			<artifactId>ganymed-ssh2</artifactId>
+			<version>build210</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.7</version>
@@ -150,6 +155,10 @@
 		<repository>
 			<id>jboss</id>
 			<url>http://repository.jboss.com/maven2</url>
+		</repository>
+		<repository>
+			<id>xemacs</id>
+			<url>http://ftp.us.xemacs.org/pub/mirrors/maven2/</url>
 		</repository>
 	</repositories>
 </project>

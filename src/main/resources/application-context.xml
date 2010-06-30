@@ -23,8 +23,6 @@
 			<value>MM/dd/yyyy</value>
 		</constructor-arg>
 	</bean>
-	<bean id="jsch" class="com.jcraft.jsch.JSch">
-	</bean>
 	<!-- Let the autowire works. -->
 	<context:annotation-config />
 	<context:component-scan base-package="com.sdstudio.iproxy" />

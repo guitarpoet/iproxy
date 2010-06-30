@@ -5,6 +5,7 @@
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" sourcepath="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5.jar" sourcepath="M2_REPO/commons-lang/commons-lang/2.5/commons-lang-2.5-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar" sourcepath="M2_REPO/ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/slf4j/jcl-over-slf4j/1.6.0/jcl-over-slf4j-1.6.0.jar" sourcepath="M2_REPO/org/slf4j/jcl-over-slf4j/1.6.0/jcl-over-slf4j-1.6.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/jcraft/jsch/0.1.42/jsch-0.1.42.jar" sourcepath="M2_REPO/com/jcraft/jsch/0.1.42/jsch-0.1.42-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.7/junit-4.7.jar" sourcepath="M2_REPO/junit/junit/4.7/junit-4.7-sources.jar"/>
