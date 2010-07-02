@@ -3,23 +3,17 @@ package com.sdstudio.iproxy.actions;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Locale;
-
-import javax.swing.AbstractAction;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Component;
 
 import com.sdstudio.iproxy.ProxyServer;
 
 @Component("StartStopButtonAction")
-public class StartStopButtonAction extends AbstractAction implements
-		PropertyChangeListener, MessageSourceAware {
+public class StartStopButtonAction extends BaseAction implements
+		PropertyChangeListener {
 	private static final long serialVersionUID = 379590111051336452L;
 	private ProxyServer proxyServer;
-	private MessageSource messageSource;
 
 	public ProxyServer getProxyServer() {
 		return proxyServer;
@@ -39,18 +33,14 @@ public class StartStopButtonAction extends AbstractAction implements
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (!(Boolean) evt.getNewValue()) {
-			putValue(NAME, messageSource.getMessage("startstop.button.start",
-					null, "Start", Locale.getDefault()));
-		} else {
-			putValue(NAME, messageSource.getMessage("startstop.button.stop",
-					null, "Stop", Locale.getDefault()));
-		}
+		updateLabel();
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-		putValue(NAME, messageSource.getMessage("startstop.button.start", null,
-				"Start", Locale.getDefault()));
+	@Override
+	protected String getLabelCode() {
+		if (getProxyServer().isRunning())
+			return "stop";
+		else
+			return "start";
 	}
 }

@@ -3,6 +3,7 @@ package com.sdstudio.iproxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -32,5 +33,12 @@ public class Utils {
 		while (in.read(buffer) != 1) {
 			out.write(buffer);
 		}
+	}
+
+	public static int findFreePort() throws IOException {
+		ServerSocket server = new ServerSocket(0);
+		int port = server.getLocalPort();
+		server.close();
+		return port;
 	}
 }

@@ -130,14 +130,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.1.5.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.42</version>
+			<groupId>ch.ethz.ganymed</groupId>
+			<artifactId>ganymed-ssh2</artifactId>
+			<version>build210</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -150,6 +145,10 @@
 		<repository>
 			<id>jboss</id>
 			<url>http://repository.jboss.com/maven2</url>
+		</repository>
+		<repository>
+			<id>xemacs</id>
+			<url>http://ftp.us.xemacs.org/pub/mirrors/maven2/</url>
 		</repository>
 	</repositories>
 </project>

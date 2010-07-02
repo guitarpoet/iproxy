@@ -1,10 +1,24 @@
 package com.sdstudio.iproxy;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -12,6 +26,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.sdstudio.iproxy.actions.EditUserInformationAction;
 import com.sdstudio.iproxy.actions.StartStopButtonAction;
 
 /**
@@ -24,10 +39,26 @@ import com.sdstudio.iproxy.actions.StartStopButtonAction;
 @Component("MainFrame")
 public class MainFrame extends JFrame implements ApplicationContextAware {
 	private static final long serialVersionUID = 1164806431325163382L;
+	private static final Logger logger = LoggerFactory
+			.getLogger(MainFrame.class);
 	private ConfigurableApplicationContext applicationContext;
 	private ProxyServer proxyServer;
+	private JMenuBar menuBar;
+	private JMenu fileMenu;
+	private JMenu userMenu;
 	private JButton startStopButton;
 	private StartStopButtonAction startStopButtonAction;
+	private EditUserInformationAction editUserInformationAction;
+
+	public EditUserInformationAction getEditUserInformationAction() {
+		return editUserInformationAction;
+	}
+
+	@Autowired
+	public void setEditUserInformationAction(
+			EditUserInformationAction editUserInformationAction) {
+		this.editUserInformationAction = editUserInformationAction;
+	}
 
 	public StartStopButtonAction getStartStopButtonAction() {
 		return startStopButtonAction;
@@ -51,8 +82,45 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 	@PostConstruct
 	public void init() {
 		startStopButton = new JButton(getStartStopButtonAction());
+		GridBagLayout layout = new GridBagLayout();
+		getContentPane().setLayout(layout);
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.insets = new Insets(10, 10, 10, 10);
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.gridy = 0;
+		try {
+			BufferedImage icon = ImageIO.read(Thread.currentThread()
+					.getContextClassLoader()
+					.getResource("images/iproxy_logo_normal.png"));
+			JLabel logo = new JLabel(new ImageIcon(icon));
+			setIconImage(icon);
+			getContentPane().add(logo);
+			layout.addLayoutComponent(logo, constraints);
+		} catch (IOException e1) {
+			logger.error("Error in reading image.", e1);
+		}
 		getContentPane().add(startStopButton);
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		layout.addLayoutComponent(startStopButton, constraints);
+		menuBar = new JMenuBar();
+		fileMenu = new JMenu(applicationContext.getMessage("menu.file", null,
+				getLocale()));
+		menuBar.add(fileMenu);
+		fileMenu.add(getStartStopButtonAction());
+		fileMenu.add(new AbstractAction(applicationContext.getMessage(
+				"menu.file.close", null, getLocale())) {
+			private static final long serialVersionUID = 7800783523993278284L;
+
+			public void actionPerformed(ActionEvent e) {
+				MainFrame.this.dispose();
+			}
+		});
+		userMenu = new JMenu(applicationContext.getMessage("menu.user", null,
+				getLocale()));
+		userMenu.add(editUserInformationAction);
+		menuBar.add(userMenu);
+		setJMenuBar(menuBar);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setResizable(false);
 		setLocationByPlatform(true);
 	}
 
@@ -60,6 +128,7 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 	public void dispose() {
 		super.dispose();
 		applicationContext.close();
+		System.exit(0);
 	}
 
 	public void setApplicationContext(ApplicationContext applicationContext)
