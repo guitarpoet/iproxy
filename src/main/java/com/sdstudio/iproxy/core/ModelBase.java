@@ -4,7 +4,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class ModelBase {
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+
+public class ModelBase implements MessageSourceAware {
+	protected MessageSource messageSource;
 	private PropertyChangeSupport propertyChangeSupport;
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -82,4 +86,7 @@ public class ModelBase {
 		return propertyChangeSupport;
 	}
 
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 }
