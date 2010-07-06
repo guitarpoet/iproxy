@@ -1,6 +1,7 @@
 package com.sdstudio.iproxy;
 
 import java.awt.Image;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,8 +41,14 @@ public class Utils {
 	public static void copy(InputStream in, OutputStream out)
 			throws IOException {
 		byte[] buffer = new byte[1024];
-		while (in.read(buffer) != 1) {
-			out.write(buffer);
+		while (true) {
+			synchronized (buffer) {
+				int amountRead = in.read(buffer);
+				if (amountRead == -1) {
+					break;
+				}
+				out.write(buffer, 0, amountRead);
+			}
 		}
 	}
 
@@ -52,9 +59,13 @@ public class Utils {
 		return port;
 	}
 
+	public static InputStream getResource(String name) {
+		return Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(name);
+	}
+
 	public static Image getImage(String name) throws IOException {
-		return ImageIO.read(Thread.currentThread().getContextClassLoader()
-				.getResource("images/" + name));
+		return ImageIO.read(getResource("images/" + name));
 	}
 
 	public static Icon getIcon(String name) throws IOException {
@@ -71,6 +82,12 @@ public class Utils {
 		}
 
 		return locale;
+	}
+
+	public static String getFileAsString(String name) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		copy(getResource(name), out);
+		return new String(out.toByteArray());
 	}
 
 	public static void setLocale(Locale locale) {

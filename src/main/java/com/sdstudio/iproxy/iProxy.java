@@ -1,5 +1,7 @@
 package com.sdstudio.iproxy;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -103,6 +105,10 @@ public class iProxy extends ModelBase implements ApplicationContextAware {
 
 	public void stopProxy() {
 		getProxyServer().stop();
+	}
+
+	public String getPac() throws IOException {
+		return Utils.getFileAsString("default.pac");
 	}
 
 	@PreDestroy
