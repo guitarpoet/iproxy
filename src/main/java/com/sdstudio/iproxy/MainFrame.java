@@ -85,13 +85,7 @@ public class MainFrame extends JFrame {
 		fileMenu = new JMenu(getMessageSupport().getMessage("menu.file"));
 		menuBar.add(fileMenu);
 		fileMenu.add(getActions().getStartStopAction());
-		fileMenu.add(new AbstractAction(getMessageSupport().getMessage("close")) {
-			private static final long serialVersionUID = 7800783523993278284L;
-
-			public void actionPerformed(ActionEvent e) {
-				MainFrame.this.dispose();
-			}
-		});
+		fileMenu.add(getActions().getCloseAction());
 		userMenu = new JMenu(getMessageSupport().getMessage("menu.user"));
 		userMenu.add(getActions().getEditUserInformationAction());
 		helpMenu = new JMenu(getMessageSupport().getMessage("menu.help"));
