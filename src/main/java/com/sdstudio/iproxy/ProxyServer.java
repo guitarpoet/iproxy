@@ -56,6 +56,10 @@ public class ProxyServer extends ModelBase implements Runnable {
 	}
 
 	@Autowired
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
+	}
+
 	protected synchronized void setRunning(boolean running) {
 		if (this.running == running)
 			return;
