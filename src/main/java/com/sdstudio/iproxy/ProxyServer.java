@@ -107,14 +107,11 @@ public class ProxyServer extends ModelBase implements Runnable {
 	public void run() {
 		try {
 			logger.info("Starting proxy server...");
-			new MessageEvent(this, "message", messageSource.getMessage(
-					"running.begin.title", null, Utils.getLocale()),
-					messageSource.getMessage(
-							"running.begin.message",
-							new Object[] {
-									getConfiguration().getString("ssh.host"),
-									getConfiguration().getString("ssh.user") },
-							Utils.getLocale())).dispatch();
+			new MessageEvent(this, "message", getMessageSupport().getMessage(
+					"running.begin.title"), getMessageSupport().getMessage(
+					"running.begin.message",
+					getConfiguration().getString("ssh.host"),
+					getConfiguration().getString("ssh.user"))).dispatch();
 			getConnection().connect(null, 5000, 5000);
 			if (getConfiguration().getString("ssh.user") == null
 					|| getConfiguration().getString("ssh.password") == null)
@@ -125,16 +122,14 @@ public class ProxyServer extends ModelBase implements Runnable {
 			setRunning(true);
 			lpf = getConnection().createLocalPortForwarder(4321,
 					getConfiguration().getString("ssh.host"), 80);
-			new MessageEvent(this, "message", messageSource.getMessage(
-					"running.title", null, Utils.getLocale()),
-					messageSource.getMessage("running.message", null,
-							Utils.getLocale())).dispatch();
+			new MessageEvent(this, "message", getMessageSupport().getMessage(
+					"running.title"), getMessageSupport().getMessage(
+					"running.message")).dispatch();
 			Utils.getMainFrame().setVisible(false);
 		} catch (Exception e) {
 			logger.error("Server start failed!", e);
-			JOptionPane.showMessageDialog(null, messageSource.getMessage(
-					"server.start.failed", new Object[] { e.getMessage() },
-					Utils.getLocale()));
+			JOptionPane.showMessageDialog(null,
+					getMessageSupport().getMessage("server.start.failed"));
 			releaseResources();
 		}
 	}

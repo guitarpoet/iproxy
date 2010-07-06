@@ -82,10 +82,9 @@ public class iProxy extends ModelBase implements ApplicationContextAware {
 	}
 
 	public void ping() {
-		new MessageEvent(this, "message", messageSource.getMessage(
-				"iproxy.running.title", null, Utils.getLocale()),
-				messageSource.getMessage("iproxy.running.message", null,
-						Utils.getLocale())).dispatch();
+		new MessageEvent(this, "message", getMessageSupport().getMessage(
+				"iproxy.running.title"), getMessageSupport().getMessage(
+				"iproxy.running.message")).dispatch();
 	}
 
 	@PostConstruct
@@ -112,6 +111,7 @@ public class iProxy extends ModelBase implements ApplicationContextAware {
 		logger.info("Stoping iProxy");
 		getServer().stop();
 		logger.info("iProxy stopped.");
+		System.exit(0);
 	}
 
 	public void stop() {

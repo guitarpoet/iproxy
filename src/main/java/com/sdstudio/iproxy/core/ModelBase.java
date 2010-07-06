@@ -4,12 +4,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class ModelBase implements MessageSourceAware {
-	protected MessageSource messageSource;
+public class ModelBase {
 	private PropertyChangeSupport propertyChangeSupport;
+	private MessageSupport messageSupport;
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		getPropertyChangeSupport().addPropertyChangeListener(listener);
@@ -86,7 +85,12 @@ public class ModelBase implements MessageSourceAware {
 		return propertyChangeSupport;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
+	public MessageSupport getMessageSupport() {
+		return messageSupport;
+	}
+
+	@Autowired
+	public void setMessageSupport(MessageSupport messageSupport) {
+		this.messageSupport = messageSupport;
 	}
 }

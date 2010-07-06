@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,14 +17,11 @@ import javax.swing.JMenuBar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.sdstudio.iproxy.actions.Actions;
+import com.sdstudio.iproxy.core.MessageSupport;
 
 /**
  * This is the main frame for the iproxy.
@@ -33,18 +31,26 @@ import com.sdstudio.iproxy.actions.Actions;
  * @version 1.0
  */
 @Component("MainFrame")
-public class MainFrame extends JFrame implements ApplicationContextAware {
+public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1164806431325163382L;
 	private static final Logger logger = LoggerFactory
 			.getLogger(MainFrame.class);
-	private ConfigurableApplicationContext applicationContext;
-	private ProxyServer proxyServer;
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JMenu userMenu;
 	private JMenu helpMenu;
 	private JButton startStopButton;
 	private Actions actions;
+	private MessageSupport messageSupport;
+
+	public MessageSupport getMessageSupport() {
+		return messageSupport;
+	}
+
+	@Autowired
+	public void setMessageSupport(MessageSupport messageSupport) {
+		this.messageSupport = messageSupport;
+	}
 
 	public Actions getActions() {
 		return actions;
@@ -55,17 +61,9 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		this.actions = actions;
 	}
 
-	public ProxyServer getProxyServer() {
-		return proxyServer;
-	}
-
-	@Autowired
-	public void setProxyServer(ProxyServer proxyServer) {
-		this.proxyServer = proxyServer;
-	}
-
 	@PostConstruct
 	public void init() {
+		setTitle(getMessageSupport().getMessage("mainframe.title"));
 		startStopButton = new JButton(getActions().getStartStopAction());
 		GridBagLayout layout = new GridBagLayout();
 		getContentPane().setLayout(layout);
@@ -84,23 +82,19 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		getContentPane().add(startStopButton);
 		layout.addLayoutComponent(startStopButton, constraints);
 		menuBar = new JMenuBar();
-		fileMenu = new JMenu(applicationContext.getMessage("menu.file", null,
-				Utils.getLocale()));
+		fileMenu = new JMenu(getMessageSupport().getMessage("menu.file"));
 		menuBar.add(fileMenu);
 		fileMenu.add(getActions().getStartStopAction());
-		fileMenu.add(new AbstractAction(applicationContext.getMessage("close",
-				null, Utils.getLocale())) {
+		fileMenu.add(new AbstractAction(getMessageSupport().getMessage("close")) {
 			private static final long serialVersionUID = 7800783523993278284L;
 
 			public void actionPerformed(ActionEvent e) {
 				MainFrame.this.dispose();
 			}
 		});
-		userMenu = new JMenu(applicationContext.getMessage("menu.user", null,
-				Utils.getLocale()));
+		userMenu = new JMenu(getMessageSupport().getMessage("menu.user"));
 		userMenu.add(getActions().getEditUserInformationAction());
-		helpMenu = new JMenu(applicationContext.getMessage("menu.help", null,
-				Utils.getLocale()));
+		helpMenu = new JMenu(getMessageSupport().getMessage("menu.help"));
 		helpMenu.add(getActions().getAboutUsAction());
 		menuBar.add(userMenu);
 		menuBar.add(helpMenu);
@@ -111,16 +105,8 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 	}
 
 	@Override
+	@PreDestroy
 	public void dispose() {
 		super.dispose();
-		applicationContext.close();
-		System.exit(0);
-	}
-
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
-		setTitle(applicationContext.getMessage("mainframe.title", null,
-				"iProxy", Utils.getLocale()));
 	}
 }
