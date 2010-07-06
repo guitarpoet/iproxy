@@ -1,7 +1,8 @@
 package com.sdstudio.iproxy.event;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
+
+import com.sdstudio.iproxy.Utils;
 
 public class MessageEvent extends ApplicationEvent {
 	private static final long serialVersionUID = 9080000451238167439L;
@@ -33,6 +34,7 @@ public class MessageEvent extends ApplicationEvent {
 		super(target);
 		this.level = level;
 		this.channel = channel;
+		this.message = message;
 	}
 
 	public String getTitle() {
@@ -68,6 +70,6 @@ public class MessageEvent extends ApplicationEvent {
 	}
 
 	public void dispatch() {
-		new ThreadLocal<ApplicationContext>().get().publishEvent(this);
+		Utils.applicationContext.publishEvent(this);
 	}
 }

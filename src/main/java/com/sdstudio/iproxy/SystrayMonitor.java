@@ -6,6 +6,8 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -59,9 +61,19 @@ public class SystrayMonitor implements MessageSourceAware,
 					.getCloseAction().getValue(Action.NAME));
 			closeMenuItem.addActionListener(getActions().getCloseAction());
 			menu.add(closeMenuItem);
-			trayIcon = new TrayIcon(Utils.getImage("iproxy_tray_icon.png"),
+
+			trayIcon = new TrayIcon(Utils.getImage("iproxy_icon.gif"),
 					messageSource.getMessage("iproxy.title", null,
 							Utils.getLocale()), menu);
+			trayIcon.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						getActions().getShowMainFrameAction().actionPerformed(
+								null);
+					}
+				}
+			});
 			systray.add(trayIcon);
 		}
 	}
