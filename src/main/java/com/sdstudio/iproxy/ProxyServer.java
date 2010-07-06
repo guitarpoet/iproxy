@@ -107,6 +107,14 @@ public class ProxyServer extends ModelBase implements Runnable {
 	public void run() {
 		try {
 			logger.info("Starting proxy server...");
+			new MessageEvent(this, "message", messageSource.getMessage(
+					"running.begin.title", null, Utils.getLocale()),
+					messageSource.getMessage(
+							"running.begin.message",
+							new Object[] {
+									getConfiguration().getString("ssh.host"),
+									getConfiguration().getString("ssh.user") },
+							Utils.getLocale())).dispatch();
 			getConnection().connect(null, 5000, 5000);
 			if (getConfiguration().getString("ssh.user") == null
 					|| getConfiguration().getString("ssh.password") == null)
