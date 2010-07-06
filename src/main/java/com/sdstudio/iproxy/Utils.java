@@ -1,9 +1,14 @@
 package com.sdstudio.iproxy;
 
+import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
+
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -40,5 +45,14 @@ public class Utils {
 		int port = server.getLocalPort();
 		server.close();
 		return port;
+	}
+
+	public static Image getImage(String name) throws IOException {
+		return ImageIO.read(Thread.currentThread().getContextClassLoader()
+				.getResource("images/" + name));
+	}
+
+	public static Icon getIcon(String name) throws IOException {
+		return new ImageIcon(getImage(name));
 	}
 }

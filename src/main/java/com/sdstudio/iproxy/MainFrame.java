@@ -4,13 +4,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -89,11 +86,8 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridy = 0;
 		try {
-			BufferedImage icon = ImageIO.read(Thread.currentThread()
-					.getContextClassLoader()
-					.getResource("images/iproxy_logo_normal.png"));
-			JLabel logo = new JLabel(new ImageIcon(icon));
-			setIconImage(icon);
+			JLabel logo = new JLabel(Utils.getIcon("iproxy_logo_normal.png"));
+			setIconImage(Utils.getImage("iproxy_icon.png"));
 			getContentPane().add(logo);
 			layout.addLayoutComponent(logo, constraints);
 		} catch (IOException e1) {
