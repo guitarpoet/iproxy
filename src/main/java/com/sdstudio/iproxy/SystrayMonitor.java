@@ -12,6 +12,8 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.NoSuchMessageException;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 @Component("SystrayMonitor")
 public class SystrayMonitor implements MessageSourceAware {
+	private static Logger logger = LoggerFactory
+			.getLogger(SystrayMonitor.class);
 	private SystemTray systray;
 	private PopupMenu menu;
 	private MessageSource messageSource;
@@ -27,6 +31,7 @@ public class SystrayMonitor implements MessageSourceAware {
 	@PostConstruct
 	public void init() throws AWTException, NoSuchMessageException, IOException {
 		if (SystemTray.isSupported()) {
+			logger.info("Installing the system tray...");
 			systray = SystemTray.getSystemTray();
 			menu = new PopupMenu();
 			MenuItem closeMenuItem = new MenuItem(messageSource.getMessage(
@@ -40,12 +45,14 @@ public class SystrayMonitor implements MessageSourceAware {
 			trayIcon = new TrayIcon(Utils.getImage("iproxy_tray_icon.png"),
 					messageSource.getMessage("iproxy.title", null,
 							Utils.getLocale()), menu);
+			systray.add(trayIcon);
 		}
 	}
 
 	@PreDestroy
 	public void dispose() {
 		if (SystemTray.isSupported() && trayIcon != null) {
+			logger.info("Removing the system tray icon.");
 			systray.remove(trayIcon);
 		}
 	}
