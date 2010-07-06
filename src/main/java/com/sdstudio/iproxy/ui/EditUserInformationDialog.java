@@ -19,6 +19,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Component;
 
 import com.sdstudio.iproxy.Configuration;
+import com.sdstudio.iproxy.Utils;
 
 @Component("EditUserInforamtionDialog")
 public class EditUserInformationDialog extends JDialog implements
@@ -49,9 +50,9 @@ public class EditUserInformationDialog extends JDialog implements
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setModal(true);
 		setTitle(messageSource.getMessage("user.information.edit", null,
-				getLocale()));
+				Utils.getLocale()));
 		usernameLabel = new JLabel(messageSource.getMessage("username", null,
-				getLocale()));
+				Utils.getLocale()));
 		usernameField = new JTextField(20);
 		layout = new GridBagLayout();
 		getContentPane().setLayout(layout);
@@ -65,7 +66,7 @@ public class EditUserInformationDialog extends JDialog implements
 		layout.addLayoutComponent(usernameField, constraints);
 
 		passwordLabel = new JLabel(messageSource.getMessage("password", null,
-				getLocale()));
+				Utils.getLocale()));
 		getContentPane().add(passwordLabel);
 		constraints.gridy = 1;
 		layout.addLayoutComponent(passwordLabel, constraints);
@@ -74,7 +75,7 @@ public class EditUserInformationDialog extends JDialog implements
 		getContentPane().add(passwordField);
 		constraints.gridy = 2;
 		submitButton = new JButton(new AbstractAction(messageSource.getMessage(
-				"submit", null, getLocale())) {
+				"submit", null, Utils.getLocale())) {
 			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -87,7 +88,7 @@ public class EditUserInformationDialog extends JDialog implements
 		getContentPane().add(submitButton);
 		layout.addLayoutComponent(submitButton, constraints);
 		cancelButton = new JButton(new AbstractAction(messageSource.getMessage(
-				"cancel", null, getLocale())) {
+				"cancel", null, Utils.getLocale())) {
 			private static final long serialVersionUID = 137812729173193471L;
 
 			public void actionPerformed(ActionEvent e) {

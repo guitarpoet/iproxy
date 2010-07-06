@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationContext;
 
 /**
  * The utility functions for iproxy
@@ -20,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
  * @version 1.0
  */
 public class Utils {
+	private static Locale locale;
+
 	public static String getUserHomeDir() {
 		return System.getProperty("user.home");
 	}
@@ -54,5 +58,22 @@ public class Utils {
 
 	public static Icon getIcon(String name) throws IOException {
 		return new ImageIcon(getImage(name));
+	}
+
+	public static MainFrame getMainFrame() {
+		return new ThreadLocal<ApplicationContext>().get().getBean(
+				MainFrame.class);
+	}
+
+	public static Locale getLocale() {
+		if (locale == null) {
+			locale = Locale.getDefault();
+		}
+
+		return locale;
+	}
+
+	public static void setLocale(Locale locale) {
+		getMainFrame().setLocale(locale);
 	}
 }

@@ -97,11 +97,11 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		layout.addLayoutComponent(startStopButton, constraints);
 		menuBar = new JMenuBar();
 		fileMenu = new JMenu(applicationContext.getMessage("menu.file", null,
-				getLocale()));
+				Utils.getLocale()));
 		menuBar.add(fileMenu);
 		fileMenu.add(getStartStopButtonAction());
 		fileMenu.add(new AbstractAction(applicationContext.getMessage(
-				"menu.file.close", null, getLocale())) {
+				"menu.file.close", null, Utils.getLocale())) {
 			private static final long serialVersionUID = 7800783523993278284L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -109,11 +109,11 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 			}
 		});
 		userMenu = new JMenu(applicationContext.getMessage("menu.user", null,
-				getLocale()));
+				Utils.getLocale()));
 		userMenu.add(editUserInformationAction);
 		menuBar.add(userMenu);
 		setJMenuBar(menuBar);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setResizable(false);
 		setLocationByPlatform(true);
 	}
@@ -129,6 +129,6 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 			throws BeansException {
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 		setTitle(applicationContext.getMessage("mainframe.title", null,
-				"iProxy", getLocale()));
+				"iProxy", Utils.getLocale()));
 	}
 }

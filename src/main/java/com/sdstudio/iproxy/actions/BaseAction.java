@@ -1,11 +1,11 @@
 package com.sdstudio.iproxy.actions;
 
-import java.util.Locale;
-
 import javax.swing.AbstractAction;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+
+import com.sdstudio.iproxy.Utils;
 
 public abstract class BaseAction extends AbstractAction implements
 		MessageSourceAware {
@@ -23,6 +23,6 @@ public abstract class BaseAction extends AbstractAction implements
 		putValue(
 				NAME,
 				messageSource.getMessage(getLabelCode(), null,
-						Locale.getDefault()));
+						Utils.getLocale()));
 	}
 }
