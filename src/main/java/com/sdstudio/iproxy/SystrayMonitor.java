@@ -68,7 +68,6 @@ public class SystrayMonitor implements ApplicationListener<MessageEvent> {
 					.getCloseAction().getValue(Action.NAME));
 			closeMenuItem.addActionListener(getActions().getCloseAction());
 			menu.add(closeMenuItem);
-
 			trayIcon = new TrayIcon(Utils.getImage("iproxy_icon.gif"),
 					getMessageSupport().getMessage("iproxy.title"), menu);
 			trayIcon.addMouseListener(new MouseAdapter() {
@@ -94,8 +93,24 @@ public class SystrayMonitor implements ApplicationListener<MessageEvent> {
 
 	public void onApplicationEvent(MessageEvent event) {
 		if (event.getChannel().equals("message") && systray != null) {
+			MessageType type = MessageType.INFO;
+			switch (event.getLevel()) {
+			case Trace:
+			case Debug:
+				type = MessageType.NONE;
+				break;
+			case Info:
+				type = MessageType.INFO;
+				break;
+			case Warn:
+				type = MessageType.WARNING;
+				break;
+			case Error:
+				type = MessageType.ERROR;
+				break;
+			}
 			trayIcon.displayMessage(event.getMessage().toString(),
-					event.getTitle(), MessageType.INFO);
+					event.getTitle(), type);
 		}
 	}
 }

@@ -82,9 +82,8 @@ public class iProxy extends ModelBase implements ApplicationContextAware {
 	}
 
 	public void ping() {
-		new MessageEvent(this, "message", getMessageSupport().getMessage(
-				"iproxy.running.title"), getMessageSupport().getMessage(
-				"iproxy.running.message")).dispatch();
+		new MessageEvent(this, "iproxy.running.title",
+				"iproxy.running.message", getMessageSupport()).dispatch();
 	}
 
 	@PostConstruct

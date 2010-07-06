@@ -3,7 +3,6 @@ package com.sdstudio.iproxy;
 import java.io.IOException;
 
 import javax.annotation.PreDestroy;
-import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.LocalPortForwarder;
 
 import com.sdstudio.iproxy.core.ModelBase;
+import com.sdstudio.iproxy.event.LevelType;
 import com.sdstudio.iproxy.event.MessageEvent;
 import com.sdstudio.iproxy.ui.EditUserInformationDialog;
 
@@ -101,7 +101,7 @@ public class ProxyServer extends ModelBase implements Runnable {
 	public void run() {
 		try {
 			logger.info("Starting proxy server...");
-			new MessageEvent(this, "message", getMessageSupport().getMessage(
+			new MessageEvent(this, getMessageSupport().getMessage(
 					"running.begin.title"), getMessageSupport().getMessage(
 					"running.begin.message",
 					getConfiguration().getString("ssh.host"),
@@ -116,14 +116,14 @@ public class ProxyServer extends ModelBase implements Runnable {
 			setRunning(true);
 			lpf = getConnection().createLocalPortForwarder(4321,
 					getConfiguration().getString("ssh.host"), 80);
-			new MessageEvent(this, "message", getMessageSupport().getMessage(
-					"running.title"), getMessageSupport().getMessage(
-					"running.message")).dispatch();
+			new MessageEvent(this, "running.title", "running.message",
+					getMessageSupport()).dispatch();
 			Utils.getMainFrame().setVisible(false);
 		} catch (Exception e) {
 			logger.error("Server start failed!", e);
-			JOptionPane.showMessageDialog(null,
-					getMessageSupport().getMessage("server.start.failed"));
+			new MessageEvent(this, LevelType.Error, "proxy.start.failed.title",
+					"proxy.start.failed.message", getMessageSupport())
+					.dispatch();
 			releaseResources();
 		}
 	}

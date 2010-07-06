@@ -3,12 +3,10 @@ package com.sdstudio.iproxy;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
