@@ -82,4 +82,9 @@ public class Configuration {
 			logger.error("Error in writing the configurations.", e);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return config.toString();
+	}
 }

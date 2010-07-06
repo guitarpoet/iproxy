@@ -18,6 +18,8 @@
 			</list>
 		</property>
 	</bean>
+	<bean id="server" class="org.mortbay.jetty.Server" />
+	<bean id="httpclient" class="org.apache.http.impl.client.DefaultHttpClient" />
 	<bean class="java.text.SimpleDateFormat" id="dateformat">
 		<constructor-arg>
 			<value>MM/dd/yyyy</value>
