@@ -23,8 +23,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.sdstudio.iproxy.actions.EditUserInformationAction;
-import com.sdstudio.iproxy.actions.StartStopButtonAction;
+import com.sdstudio.iproxy.actions.Actions;
 
 /**
  * This is the main frame for the iproxy.
@@ -43,28 +42,17 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JMenu userMenu;
+	private JMenu helpMenu;
 	private JButton startStopButton;
-	private StartStopButtonAction startStopButtonAction;
-	private EditUserInformationAction editUserInformationAction;
+	private Actions actions;
 
-	public EditUserInformationAction getEditUserInformationAction() {
-		return editUserInformationAction;
+	public Actions getActions() {
+		return actions;
 	}
 
 	@Autowired
-	public void setEditUserInformationAction(
-			EditUserInformationAction editUserInformationAction) {
-		this.editUserInformationAction = editUserInformationAction;
-	}
-
-	public StartStopButtonAction getStartStopButtonAction() {
-		return startStopButtonAction;
-	}
-
-	@Autowired
-	public void setStartStopButtonAction(
-			StartStopButtonAction startStopButtonAction) {
-		this.startStopButtonAction = startStopButtonAction;
+	public void setActions(Actions actions) {
+		this.actions = actions;
 	}
 
 	public ProxyServer getProxyServer() {
@@ -78,7 +66,7 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 
 	@PostConstruct
 	public void init() {
-		startStopButton = new JButton(getStartStopButtonAction());
+		startStopButton = new JButton(getActions().getStartStopAction());
 		GridBagLayout layout = new GridBagLayout();
 		getContentPane().setLayout(layout);
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -99,9 +87,9 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		fileMenu = new JMenu(applicationContext.getMessage("menu.file", null,
 				Utils.getLocale()));
 		menuBar.add(fileMenu);
-		fileMenu.add(getStartStopButtonAction());
-		fileMenu.add(new AbstractAction(applicationContext.getMessage(
-				"menu.file.close", null, Utils.getLocale())) {
+		fileMenu.add(getActions().getStartStopAction());
+		fileMenu.add(new AbstractAction(applicationContext.getMessage("close",
+				null, Utils.getLocale())) {
 			private static final long serialVersionUID = 7800783523993278284L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -110,8 +98,12 @@ public class MainFrame extends JFrame implements ApplicationContextAware {
 		});
 		userMenu = new JMenu(applicationContext.getMessage("menu.user", null,
 				Utils.getLocale()));
-		userMenu.add(editUserInformationAction);
+		userMenu.add(getActions().getEditUserInformationAction());
+		helpMenu = new JMenu(applicationContext.getMessage("menu.help", null,
+				Utils.getLocale()));
+		helpMenu.add(getActions().getAboutUsAction());
 		menuBar.add(userMenu);
+		menuBar.add(helpMenu);
 		setJMenuBar(menuBar);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setResizable(false);

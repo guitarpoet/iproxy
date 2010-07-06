@@ -1,7 +1,7 @@
 package com.sdstudio.iproxy;
 
 import java.io.IOException;
-import java.util.Locale;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.swing.JOptionPane;
@@ -15,6 +15,7 @@ import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.LocalPortForwarder;
 
 import com.sdstudio.iproxy.core.ModelBase;
+import com.sdstudio.iproxy.event.MessageEvent;
 import com.sdstudio.iproxy.ui.EditUserInformationDialog;
 
 /**
@@ -116,11 +117,16 @@ public class ProxyServer extends ModelBase implements Runnable {
 			setRunning(true);
 			lpf = getConnection().createLocalPortForwarder(4321,
 					getConfiguration().getString("ssh.host"), 80);
+			new MessageEvent(this, "message", messageSource.getMessage(
+					"running.title", null, Utils.getLocale()),
+					messageSource.getMessage("running.message", null,
+							Utils.getLocale())).dispatch();
+			Utils.getMainFrame().setVisible(false);
 		} catch (Exception e) {
 			logger.error("Server start failed!", e);
 			JOptionPane.showMessageDialog(null, messageSource.getMessage(
 					"server.start.failed", new Object[] { e.getMessage() },
-					Locale.getDefault()));
+					Utils.getLocale()));
 			releaseResources();
 		}
 	}

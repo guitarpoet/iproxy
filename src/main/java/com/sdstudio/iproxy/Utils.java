@@ -23,6 +23,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class Utils {
 	private static Locale locale;
+	protected static ApplicationContext applicationContext;
 
 	public static String getUserHomeDir() {
 		return System.getProperty("user.home");
@@ -61,8 +62,7 @@ public class Utils {
 	}
 
 	public static MainFrame getMainFrame() {
-		return new ThreadLocal<ApplicationContext>().get().getBean(
-				MainFrame.class);
+		return applicationContext.getBean(MainFrame.class);
 	}
 
 	public static Locale getLocale() {

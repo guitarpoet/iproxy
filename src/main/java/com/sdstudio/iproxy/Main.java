@@ -1,6 +1,5 @@
 package com.sdstudio.iproxy;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -15,7 +14,7 @@ public class Main {
 		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"application-context.xml");
 		// Set applicationcontext to thread local.
-		new ThreadLocal<ApplicationContext>().set(applicationContext);
+		Utils.applicationContext = applicationContext;
 		MainFrame frame = (MainFrame) applicationContext.getBean("MainFrame");
 		frame.pack();
 		frame.setVisible(true);

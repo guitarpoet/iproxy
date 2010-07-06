@@ -8,6 +8,13 @@ public class MessageEvent extends ApplicationEvent {
 	private String channel = "log";
 	private Object message;
 	private LevelType level = LevelType.Info;
+	private String title;
+
+	public MessageEvent(Object target, String channel, String title,
+			Object message) {
+		this(target, message, LevelType.Info, channel);
+		this.title = title;
+	}
 
 	public MessageEvent(Object target, String channel, Object message) {
 		this(target, message, LevelType.Info, channel);
@@ -26,6 +33,14 @@ public class MessageEvent extends ApplicationEvent {
 		super(target);
 		this.level = level;
 		this.channel = channel;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getChannel() {
