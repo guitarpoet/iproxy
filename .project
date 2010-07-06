@@ -1,6 +1,7 @@
 <projectDescription>
   <name>iproxy</name>
-  <comment>This is a swing application to use ssh tunnel to bypass the firewall and great firewall.</comment>
+  <comment>This is a swing application to use ssh tunnel to bypass
+		the firewall and great firewall.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
