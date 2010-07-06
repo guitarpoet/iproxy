@@ -14,20 +14,16 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Component;
 
 import com.sdstudio.iproxy.Configuration;
-import com.sdstudio.iproxy.Utils;
+import com.sdstudio.iproxy.core.MessageSupport;
 
 @Component("EditUserInforamtionDialog")
-public class EditUserInformationDialog extends JDialog implements
-		MessageSourceAware {
+public class EditUserInformationDialog extends JDialog {
 	private static final long serialVersionUID = -8994424108848247966L;
 
 	private Configuration configuration;
-	private MessageSource messageSource;
 	private GridBagLayout layout;
 	private JLabel usernameLabel;
 	private JTextField usernameField;
@@ -35,6 +31,16 @@ public class EditUserInformationDialog extends JDialog implements
 	private JPasswordField passwordField;
 	private JButton submitButton;
 	private JButton cancelButton;
+	private MessageSupport messageSupport;
+
+	public MessageSupport getMessageSupport() {
+		return messageSupport;
+	}
+
+	@Autowired
+	public void setMessageSupport(MessageSupport messageSupport) {
+		this.messageSupport = messageSupport;
+	}
 
 	public Configuration getConfiguration() {
 		return configuration;
@@ -49,10 +55,8 @@ public class EditUserInformationDialog extends JDialog implements
 	public void init() {
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setModal(true);
-		setTitle(messageSource.getMessage("user.information.edit", null,
-				Utils.getLocale()));
-		usernameLabel = new JLabel(messageSource.getMessage("username", null,
-				Utils.getLocale()));
+		setTitle(getMessageSupport().getMessage("user.information.edit"));
+		usernameLabel = new JLabel(getMessageSupport().getMessage("username"));
 		usernameField = new JTextField(20);
 		layout = new GridBagLayout();
 		getContentPane().setLayout(layout);
@@ -65,8 +69,7 @@ public class EditUserInformationDialog extends JDialog implements
 		getContentPane().add(usernameField);
 		layout.addLayoutComponent(usernameField, constraints);
 
-		passwordLabel = new JLabel(messageSource.getMessage("password", null,
-				Utils.getLocale()));
+		passwordLabel = new JLabel(getMessageSupport().getMessage("password"));
 		getContentPane().add(passwordLabel);
 		constraints.gridy = 1;
 		layout.addLayoutComponent(passwordLabel, constraints);
@@ -74,8 +77,8 @@ public class EditUserInformationDialog extends JDialog implements
 		layout.addLayoutComponent(passwordField, constraints);
 		getContentPane().add(passwordField);
 		constraints.gridy = 2;
-		submitButton = new JButton(new AbstractAction(messageSource.getMessage(
-				"submit", null, Utils.getLocale())) {
+		submitButton = new JButton(new AbstractAction(getMessageSupport()
+				.getMessage("submit")) {
 			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -87,8 +90,8 @@ public class EditUserInformationDialog extends JDialog implements
 		});
 		getContentPane().add(submitButton);
 		layout.addLayoutComponent(submitButton, constraints);
-		cancelButton = new JButton(new AbstractAction(messageSource.getMessage(
-				"cancel", null, Utils.getLocale())) {
+		cancelButton = new JButton(new AbstractAction(getMessageSupport()
+				.getMessage("cancel")) {
 			private static final long serialVersionUID = 137812729173193471L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -108,9 +111,5 @@ public class EditUserInformationDialog extends JDialog implements
 			passwordField.setText(getConfiguration().getString("ssh.password"));
 		}
 		super.setVisible(b);
-	}
-
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 }

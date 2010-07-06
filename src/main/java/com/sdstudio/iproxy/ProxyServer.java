@@ -2,7 +2,6 @@ package com.sdstudio.iproxy;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.swing.JOptionPane;
 
@@ -74,11 +73,6 @@ public class ProxyServer extends ModelBase implements Runnable {
 
 	public synchronized boolean isRunning() {
 		return running;
-	}
-
-	@PostConstruct
-	public void init() {
-		logger.info("Initializing the proxy server...");
 	}
 
 	public void start() {

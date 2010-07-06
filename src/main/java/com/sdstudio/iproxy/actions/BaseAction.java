@@ -1,28 +1,29 @@
 package com.sdstudio.iproxy.actions;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sdstudio.iproxy.Utils;
+import com.sdstudio.iproxy.core.MessageSupport;
 
-public abstract class BaseAction extends AbstractAction implements
-		MessageSourceAware {
+public abstract class BaseAction extends AbstractAction {
 	private static final long serialVersionUID = -5710263350702525640L;
-	protected MessageSource messageSource;
+	private MessageSupport messageSupport;
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-		updateLabel();
+	public MessageSupport getMessageSupport() {
+		return messageSupport;
+	}
+
+	@Autowired
+	public void setMessageSupport(MessageSupport messageSupport) {
+		this.messageSupport = messageSupport;
 	}
 
 	protected abstract String getLabelCode();
 
-	protected void updateLabel() {
-		putValue(
-				NAME,
-				messageSource.getMessage(getLabelCode(), null,
-						Utils.getLocale()));
+	@PostConstruct
+	public void updateLabel() {
+		putValue(NAME, getMessageSupport().getMessage(getLabelCode()));
 	}
 }

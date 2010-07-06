@@ -18,24 +18,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
 import com.sdstudio.iproxy.actions.Actions;
+import com.sdstudio.iproxy.core.MessageSupport;
 import com.sdstudio.iproxy.event.MessageEvent;
 
 @Component("SystrayMonitor")
-public class SystrayMonitor implements MessageSourceAware,
-		ApplicationListener<MessageEvent> {
+public class SystrayMonitor implements ApplicationListener<MessageEvent> {
 	private static Logger logger = LoggerFactory
 			.getLogger(SystrayMonitor.class);
 	private SystemTray systray;
 	private PopupMenu menu;
-	private MessageSource messageSource;
 	private TrayIcon trayIcon;
 	private Actions actions;
+	private MessageSupport messageSupport;
+
+	public MessageSupport getMessageSupport() {
+		return messageSupport;
+	}
+
+	@Autowired
+	public void setMessageSupport(MessageSupport messageSupport) {
+		this.messageSupport = messageSupport;
+	}
 
 	public Actions getActions() {
 		return actions;
@@ -63,8 +70,7 @@ public class SystrayMonitor implements MessageSourceAware,
 			menu.add(closeMenuItem);
 
 			trayIcon = new TrayIcon(Utils.getImage("iproxy_icon.gif"),
-					messageSource.getMessage("iproxy.title", null,
-							Utils.getLocale()), menu);
+					getMessageSupport().getMessage("iproxy.title"), menu);
 			trayIcon.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -84,10 +90,6 @@ public class SystrayMonitor implements MessageSourceAware,
 			logger.info("Removing the system tray icon.");
 			systray.remove(trayIcon);
 		}
-	}
-
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 
 	public void onApplicationEvent(MessageEvent event) {

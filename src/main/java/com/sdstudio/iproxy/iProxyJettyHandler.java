@@ -11,18 +11,16 @@ import org.mortbay.jetty.handler.AbstractHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sdstudio.iproxy.core.ModelBase;
-
 @Component("iProxyJettyHandler")
 public class iProxyJettyHandler extends AbstractHandler {
-	private ModelBase iproxy;
+	private iProxy iproxy;
 
-	public ModelBase getIproxy() {
+	public iProxy getIproxy() {
 		return iproxy;
 	}
 
 	@Autowired
-	public void setIproxy(ModelBase iproxy) {
+	public void setIproxy(iProxy iproxy) {
 		this.iproxy = iproxy;
 	}
 
