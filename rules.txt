@@ -4,7 +4,6 @@
 ; URL: http://guitarpoet.github.com/iproxy/rules.txt
 
 #BEGIN
-[Wildcard]
 [RegExp]
 bit\.ly
 twitter\.com
