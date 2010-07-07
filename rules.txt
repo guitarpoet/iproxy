@@ -1,0 +1,27 @@
+; Summary: iProxy switchyrules list
+; Author: Jack (guitarpoet@gmail.com)
+; Date: 2010-01-20
+; URL: http://samabox.com/projects/chrome/switchy/switchyrules.txt
+
+#BEGIN
+[Wildcard]
+
+*bit.ly/*
+*twitter.com/*
+*facebook.com/*
+*blogspot.com/*
+*apirocks.com/*
+*dropbox.com/*
+*developer.android.com/*
+*spreadsheets.google.com/*
+*boingboing.net/*
+*scribd.com/*
+*yousendit.com/*
+*upload.wikimedia.org/*
+*posterous.com/*
+*img.ly/*
+*bullogger.com/*
+*diigo.com/*
+
+[RegExp]
+#END
