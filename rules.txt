@@ -1,7 +1,7 @@
 ; Summary: iProxy switchyrules list
 ; Author: Jack (guitarpoet@gmail.com)
 ; Date: 2010-01-20
-; URL: http://samabox.com/projects/chrome/switchy/switchyrules.txt
+; URL: http://guitarpoet.github.com/iproxy/rules.txt
 
 #BEGIN
 [Wildcard]
