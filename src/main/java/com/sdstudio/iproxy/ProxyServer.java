@@ -1,7 +1,5 @@
 package com.sdstudio.iproxy;
 
-import java.io.IOException;
-
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.LocalPortForwarder;
 
 import com.sdstudio.iproxy.core.ModelBase;
 import com.sdstudio.iproxy.event.LevelType;
@@ -30,7 +27,6 @@ public class ProxyServer extends ModelBase implements Runnable {
 	private Connection connection;
 	private boolean running;
 	private Configuration configuration;
-	private LocalPortForwarder lpf;
 	private EditUserInformationDialog dialog;
 
 	public EditUserInformationDialog getDialog() {
@@ -88,13 +84,8 @@ public class ProxyServer extends ModelBase implements Runnable {
 	}
 
 	private void releaseResources() {
-		try {
-			if (lpf != null)
-				lpf.close();
-		} catch (IOException e) {
-			logger.error("Error closing local port forwarding.", e);
-		}
-		connection.close();
+		if (connection != null)
+			connection.close();
 		setRunning(false);
 	}
 
@@ -114,8 +105,8 @@ public class ProxyServer extends ModelBase implements Runnable {
 					getConfiguration().getString("ssh.user"),
 					getConfiguration().getString("ssh.password"));
 			setRunning(true);
-			lpf = getConnection().createLocalPortForwarder(4321,
-					getConfiguration().getString("ssh.host"), 80);
+			logger.info("Starting the socks proxy server...");
+			getConnection().createDynamicPortForwarder(2010);
 			new MessageEvent(this, "running.title", "running.message",
 					getMessageSupport()).dispatch();
 			Utils.getMainFrame().setVisible(false);
