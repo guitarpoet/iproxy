@@ -1,7 +1,6 @@
 package com.sdstudio.iproxy;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
@@ -35,13 +34,7 @@ public class iProxyJettyHandler extends AbstractHandler {
 		}
 		try {
 			Method m = iProxy.class.getMethod(method);
-			Object o = m.invoke(getIproxy(), new Object[0]);
-			if (method.equals("getPac") && o != null) {
-				response.setContentType("application/x-ns-proxy-autoconfig");
-				PrintWriter out = response.getWriter();
-				out.println(o);
-				out.close();
-			}
+			m.invoke(getIproxy(), new Object[0]);
 		} catch (Exception e) {
 			response.setStatus(ERROR);
 		}
