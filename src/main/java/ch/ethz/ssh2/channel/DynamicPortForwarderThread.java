@@ -2,8 +2,8 @@ package ch.ethz.ssh2.channel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sdstudio.iproxy.ProxyInfo;
+import com.sdstudio.iproxy.ProxyPatternMatcher;
 
 public class DynamicPortForwarderThread extends Thread implements
 		IChannelWorkerThread {
@@ -21,12 +22,21 @@ public class DynamicPortForwarderThread extends Thread implements
 	private ChannelManager channelManager;
 	private final ServerSocket proxySock;
 	private static final ProxyInfo info = new ProxyInfo();
+	private ProxyPatternMatcher matcher;
 
 	public DynamicPortForwarderThread(ChannelManager channelManager,
 			int localPort) throws IOException {
 		super();
 		this.channelManager = channelManager;
 		proxySock = new ServerSocket(localPort);
+	}
+
+	public ProxyPatternMatcher getMatcher() {
+		return matcher;
+	}
+
+	public void setMatcher(ProxyPatternMatcher matcher) {
+		this.matcher = matcher;
 	}
 
 	public void stopWorking() {
@@ -54,9 +64,9 @@ public class DynamicPortForwarderThread extends Thread implements
 				stopWorking();
 				return;
 			}
-			PushbackInputStream in;
+			InputStream in;
 			try {
-				in = new PushbackInputStream(s.getInputStream());
+				in = s.getInputStream();
 				OutputStream out = s.getOutputStream();
 				if ((in.read()) == 4) {
 					if (in.read() == 1) {
@@ -84,61 +94,78 @@ public class DynamicPortForwarderThread extends Thread implements
 						}
 						out.write(0);
 						out.write(0x5a);
-						Channel cn = null;
-						StreamForwarder r2l = null;
-						StreamForwarder l2r = null;
-						try {
-							/*
-							 * This may fail, e.g., if the remote port is closed
-							 * (in optimistic terms: not open yet)
-							 */
-
-							cn = channelManager.openDirectTCPIPChannel(info
-									.getHost(), info.getPort(), s
-									.getInetAddress().getHostAddress(), s
-									.getPort());
-
-						} catch (IOException e) {
-							/*
-							 * Simply close the local socket and wait for the
-							 * next incoming connection
-							 */
-							try {
-								s.close();
-							} catch (IOException ignore) {
-							}
-
-							continue;
-						}
 						out.write(new byte[] { 0, 0, 0, 0, 0, 0 });
-						try {
-							r2l = new StreamForwarder(cn, null, null,
-									cn.stdoutStream, out, "RemoteToLocal");
-							l2r = new StreamForwarder(cn, r2l, s, in,
-									cn.stdinStream, "LocalToRemote");
-						} catch (IOException e) {
+						if (getMatcher().match(info)) {
+							Channel cn = null;
+							StreamForwarder r2l = null;
+							StreamForwarder l2r = null;
 							try {
 								/*
-								 * This message is only visible during
-								 * debugging, since we discard the channel
-								 * immediatelly
+								 * This may fail, e.g., if the remote port is
+								 * closed (in optimistic terms: not open yet)
 								 */
-								cn.cm.closeChannel(cn,
-										"Weird error during creation of StreamForwarder ("
-												+ e.getMessage() + ")", true);
-							} catch (IOException ignore) {
+
+								cn = channelManager.openDirectTCPIPChannel(info
+										.getHost(), info.getPort(), s
+										.getInetAddress().getHostAddress(), s
+										.getPort());
+
+							} catch (IOException e) {
+								/*
+								 * Simply close the local socket and wait for
+								 * the next incoming connection
+								 */
+								try {
+									s.close();
+								} catch (IOException ignore) {
+								}
+
+								continue;
+							}
+							try {
+								r2l = new StreamForwarder(cn, null, null,
+										cn.stdoutStream, out, "RemoteToLocal");
+								l2r = new StreamForwarder(cn, r2l, s, in,
+										cn.stdinStream, "LocalToRemote");
+							} catch (IOException e) {
+								try {
+									/*
+									 * This message is only visible during
+									 * debugging, since we discard the channel
+									 * immediatelly
+									 */
+									cn.cm.closeChannel(cn,
+											"Weird error during creation of StreamForwarder ("
+													+ e.getMessage() + ")",
+											true);
+								} catch (IOException ignore) {
+								}
+
+								continue;
 							}
 
-							continue;
+							r2l.setDaemon(true);
+							l2r.setDaemon(true);
+							r2l.start();
+							l2r.start();
+						} else {
+							Socket sock = new Socket(info.getHost(), info
+									.getPort());
+							InputStream sin = sock.getInputStream();
+							OutputStream sout = sock.getOutputStream();
+							SocketStreamFowarder r2l = new SocketStreamFowarder(
+									null, null, in, sout, null);
+							SocketStreamFowarder l2r = new SocketStreamFowarder(
+									sock, s, sin, out, r2l);
+							r2l.setDaemon(true);
+							l2r.setDaemon(true);
+							r2l.start();
+							l2r.start();
 						}
-
-						r2l.setDaemon(true);
-						l2r.setDaemon(true);
-						r2l.start();
-						l2r.start();
 					}
 				}
 			} catch (IOException e1) {
+				logger.error("", e1);
 			}
 		}
 

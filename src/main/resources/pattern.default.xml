@@ -1,0 +1,25 @@
+<map>
+	<entry>
+		<int>80</int>
+		<set>
+			<com.sdstudio.iproxy.ProxyInfo>
+				<host>twimg.com</host>
+				<port>80</port>
+				<name>twitter img</name>
+				<enabled>true</enabled>
+			</com.sdstudio.iproxy.ProxyInfo>
+			<com.sdstudio.iproxy.ProxyInfo>
+				<host>twitter.com</host>
+				<port>80</port>
+				<name>twitter</name>
+				<enabled>true</enabled>
+			</com.sdstudio.iproxy.ProxyInfo>
+			<com.sdstudio.iproxy.ProxyInfo>
+				<host>facebook.com</host>
+				<port>80</port>
+				<name>facebook</name>
+				<enabled>true</enabled>
+			</com.sdstudio.iproxy.ProxyInfo>
+		</set>
+	</entry>
+</map>

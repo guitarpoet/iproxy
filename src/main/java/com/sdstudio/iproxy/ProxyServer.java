@@ -28,6 +28,16 @@ public class ProxyServer extends ModelBase implements Runnable {
 	private boolean running;
 	private Configuration configuration;
 	private EditUserInformationDialog dialog;
+	private ProxyPatternMatcher proxyPatternMatcher;
+
+	public ProxyPatternMatcher getProxyPatternMatcher() {
+		return proxyPatternMatcher;
+	}
+
+	@Autowired
+	public void setProxyPatternMatcher(ProxyPatternMatcher proxyPatternMatcher) {
+		this.proxyPatternMatcher = proxyPatternMatcher;
+	}
 
 	public EditUserInformationDialog getDialog() {
 		return dialog;
@@ -106,7 +116,8 @@ public class ProxyServer extends ModelBase implements Runnable {
 					getConfiguration().getString("ssh.password"));
 			setRunning(true);
 			logger.info("Starting the socks proxy server...");
-			getConnection().createDynamicPortForwarder(2010);
+			getConnection().createDynamicPortForwarder(2010).setMatcher(
+					getProxyPatternMatcher());
 			new MessageEvent(this, "running.title", "running.message",
 					getMessageSupport()).dispatch();
 			Utils.getMainFrame().setVisible(false);

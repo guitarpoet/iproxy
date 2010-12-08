@@ -1,5 +1,6 @@
-iProxy is an local proxy server using ssh to transfer your request through ssh tunnel, send by the remote server and get the response back.
+At v0.2, iProxy uses ssh's dynamic proxy pattern to handle proxy.
 
-It can be used as a http, https and ftp proxy to by pass your firewall and, gfw.
+It provides a sock4 proxy.  It will listen on the port 2010 to provide the proxy service.
+
 
 Developer: Jack <guitarpoet@gmail.com>

@@ -2,6 +2,7 @@ package com.sdstudio.iproxy;
 
 import java.awt.Image;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +29,26 @@ public class Utils {
 
 	public static String getUserHomeDir() {
 		return System.getProperty("user.home");
+	}
+
+	public static String getTmpDir() {
+		return System.getProperty("java.io.tmpdir");
+	}
+
+	public static File getOrCreate(String path, boolean isDir)
+			throws IOException {
+		File f = new File(path);
+		if (f.exists()) {
+			return f;
+		}
+		if (isDir) {
+			f.mkdirs();
+		} else {
+			// Create parent dir if necessary
+			getOrCreate(f.getParent(), true);
+			f.createNewFile();
+		}
+		return f;
 	}
 
 	public static String getFileSeperato() {
