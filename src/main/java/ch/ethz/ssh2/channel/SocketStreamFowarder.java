@@ -35,8 +35,9 @@ public class SocketStreamFowarder extends Thread {
 		try {
 			if (source != null && target != null)
 				logger.debug(MessageFormat.format(
-						"Transfering data from {0} to {1}", source
-								.getInetAddress(), target.getInetAddress()));
+						"Transfering data from {0}:{1} to {2}:{3}", source
+								.getInetAddress(), source.getPort(), target
+								.getInetAddress(), target.getPort()));
 			int i;
 			while ((i = sourceInput.read()) != -1) {
 				targetOutput.write(i);
@@ -45,8 +46,9 @@ public class SocketStreamFowarder extends Thread {
 		} catch (IOException e) {
 			if (source != null && target != null)
 				logger.error(MessageFormat.format(
-						"Exception when transfer data from {0} to {1}", source
-								.getInetAddress(), target.getInetAddress()), e);
+						"Exception when transfer data from {0}:{1} to {2}:{3}",
+						source.getInetAddress(), source.getPort(), target
+								.getInetAddress(), target.getPort()), e);
 			else
 				logger.error("", e);
 		} finally {

@@ -4,6 +4,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
@@ -32,6 +35,8 @@ public class EditUserInformationDialog extends JDialog {
 	private JButton submitButton;
 	private JButton cancelButton;
 	private MessageSupport messageSupport;
+	private AbstractAction submitAction;
+	private KeyListener enterSubmitHandler;
 
 	public MessageSupport getMessageSupport() {
 		return messageSupport;
@@ -53,11 +58,31 @@ public class EditUserInformationDialog extends JDialog {
 
 	@PostConstruct
 	public void init() {
+		submitAction = new AbstractAction(getMessageSupport().getMessage(
+				"submit")) {
+			private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e) {
+				getConfiguration().put("ssh.user", usernameField.getText());
+				getConfiguration().put("ssh.password",
+						new String(passwordField.getPassword()));
+				setVisible(false);
+			}
+		};
+		enterSubmitHandler = new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+					submitAction.actionPerformed(null);
+				}
+			}
+		};
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setModal(true);
 		setTitle(getMessageSupport().getMessage("user.information.edit"));
 		usernameLabel = new JLabel(getMessageSupport().getMessage("username"));
 		usernameField = new JTextField(20);
+		usernameField.addKeyListener(enterSubmitHandler);
 		layout = new GridBagLayout();
 		getContentPane().setLayout(layout);
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -74,20 +99,11 @@ public class EditUserInformationDialog extends JDialog {
 		constraints.gridy = 1;
 		layout.addLayoutComponent(passwordLabel, constraints);
 		passwordField = new JPasswordField(20);
+		passwordField.addKeyListener(enterSubmitHandler);
 		layout.addLayoutComponent(passwordField, constraints);
 		getContentPane().add(passwordField);
 		constraints.gridy = 2;
-		submitButton = new JButton(new AbstractAction(getMessageSupport()
-				.getMessage("submit")) {
-			private static final long serialVersionUID = 1L;
-
-			public void actionPerformed(ActionEvent e) {
-				getConfiguration().put("ssh.user", usernameField.getText());
-				getConfiguration().put("ssh.password",
-						new String(passwordField.getPassword()));
-				setVisible(false);
-			}
-		});
+		submitButton = new JButton(submitAction);
 		getContentPane().add(submitButton);
 		layout.addLayoutComponent(submitButton, constraints);
 		cancelButton = new JButton(new AbstractAction(getMessageSupport()
