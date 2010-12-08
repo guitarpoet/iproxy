@@ -28,6 +28,9 @@ public class Logger {
 	}
 
 	public final void log(int level, String message) {
-		logger.info(message);
+		if (level == 50)
+			logger.debug(message);
+		else
+			logger.info(message);
 	}
 }
