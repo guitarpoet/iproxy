@@ -3,17 +3,20 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[iproxy] %p [%t] %c{1}.%M(%L) | %m%n" />
+			<param name="ConversionPattern" value="[iproxy] %p %d [%t] %c{1}.%M(%L) | %m%n" />
 		</layout>
 	</appender>
 	<logger name="org.apache">
-		<level value="INFO" />
+		<level value="WARN" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="INFO" />
+		<level value="WARN" />
 	</logger>
 	<logger name="com.sdstudio">
 		<level value="DEBUG" />
+	</logger>
+	<logger name="ch.ethz">
+		<level value="ERROR" />
 	</logger>
 	<root>
 		<level value="DEBUG" />
