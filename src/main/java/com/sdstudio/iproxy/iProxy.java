@@ -93,7 +93,7 @@ public class iProxy extends ModelBase implements ApplicationContextAware {
 		logger.info("Starting iProxy...");
 		logger.debug("Reading the configuration : {}.", getConfiguration());
 		SocketConnector sc = new SocketConnector();
-		sc.setPort(1234);
+		sc.setPort(getConfiguration().getInteger("listen.port"));
 		getServer().setConnectors(new Connector[] { sc });
 		getServer().addHandler(getHandler());
 		getServer().start();

@@ -1,5 +1,7 @@
 package com.sdstudio.iproxy;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 
 import org.apache.http.HttpHost;
@@ -9,6 +11,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.sdstudio.iproxy.ui.Splash;
 
 /**
  * This is the main application class for the iproxy
@@ -20,7 +24,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Main {
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		Splash s = new Splash();
+		s.pack();
+		s.setVisible(true);
+		Dimension p = Toolkit.getDefaultToolkit().getScreenSize();
+		s.setLocation(p.width / 2 - s.getWidth() / 2, p.height / 2
+				- s.getHeight() / 2);
 		try {
 			logger.info("Checking if there is an iProxy running...");
 			HttpClient client = new DefaultHttpClient();
@@ -39,6 +49,7 @@ public class Main {
 		Utils.applicationContext = applicationContext;
 		MainFrame frame = (MainFrame) applicationContext.getBean("MainFrame");
 		frame.pack();
+		s.dispose();
 		frame.setVisible(true);
 	}
 }

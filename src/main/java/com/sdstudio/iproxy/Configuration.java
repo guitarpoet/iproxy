@@ -52,7 +52,8 @@ public class Configuration {
 			}
 		} else {
 			try {
-				logger.info("Can't find the configuration file in user's home, reading the default configurations.");
+				logger
+						.info("Can't find the configuration file in user's home, reading the default configurations.");
 				config.load(Thread.currentThread().getContextClassLoader()
 						.getResourceAsStream("config.default.properties"));
 			} catch (IOException e) {
@@ -68,13 +69,13 @@ public class Configuration {
 	@PreDestroy
 	public void save() {
 		File file = new File(getConfigDir());
-		if (!file.exists())
+		if (!file.exists()) {
 			try {
 				file.createNewFile();
-
 			} catch (IOException e) {
 				logger.error("Error in creating the config file.", e);
 			}
+		}
 		try {
 			config.store(new FileWriter(file),
 					"The configuration file for iproxy");

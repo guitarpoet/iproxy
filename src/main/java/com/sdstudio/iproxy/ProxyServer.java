@@ -116,7 +116,8 @@ public class ProxyServer extends ModelBase implements Runnable {
 					getConfiguration().getString("ssh.password"));
 			setRunning(true);
 			logger.info("Starting the socks proxy server...");
-			getConnection().createDynamicPortForwarder(2010).setMatcher(
+			getConnection().createDynamicPortForwarder(
+					getConfiguration().getInteger("iproxy.port")).setMatcher(
 					getProxyPatternMatcher());
 			new MessageEvent(this, "running.title", "running.message",
 					getMessageSupport()).dispatch();
